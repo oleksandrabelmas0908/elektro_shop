@@ -41,3 +41,19 @@ class OrderSerializer(serializers.ModelSerializer):
             "status",
             "items",
         )
+
+class MyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUser
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+        )
+
+    def validate_email(self, value):
+        if not value.endswith('@example.com'):
+            raise serializers.ValidationError("Email must end with @example.com")
+        return value

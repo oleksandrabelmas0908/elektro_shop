@@ -1,6 +1,9 @@
 from django.core.serializers import serialize
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
+
 from rest_framework.views import APIView
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import ProductSerializer, OrderSerializer
 from .models import Product, Orders
@@ -9,7 +12,7 @@ from rest_framework import status
 
 
 def say_hello(request):
-    return HttpResponse("Hello nigga")
+    return JsonResponse({"data": "Hello nigga"})
 
 
 class ProductList(APIView):
@@ -26,3 +29,18 @@ class ProductList(APIView):
         return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
+class UserInfo(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+
+    def get(self, request, format=None):
+        content = {
+            'user': str(request.user),  
+            'auth': str(request.auth),  
+        }
+        return Response(content)
+    
+    def post(self, request, format=None):
+        data = request.data
+        if 'name' in data and 'email' in data:
+            return Response({"message": "User info received", "name": data['name'], "email": data['email']}, status=status.HTTP_201_CREATED)
+        return Response({"error": "Invalid data"}, status=status.HTTP_400_BAD_REQUEST)

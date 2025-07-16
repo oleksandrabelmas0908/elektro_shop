@@ -1,21 +1,56 @@
 import uuid
 from datetime import datetime
 
+from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 
 from django.conf import settings
 
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib.auth.password_validation import validate_password
 
-class MyUser(AbstractBaseUser):
-    name = models.CharField(max_length=255, null=False)
+
+class MyUserManager(BaseUserManager):
+    def create_user(self, email, password, **extra_fields):
+        if not email:
+            raise ValueError("Email is required")
+        
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise ValueError("Invalid email format")
+        
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        if password:
+            try:
+                validate_password(password)
+            except ValidationError as e:
+                raise ValueError(f"Password validation error: {', '.join(e.messages)}")
+            user.set_password(password)
+        else:
+            raise ValueError("Password is required")
+        user.save()
+        return user
+
+
+class MyUser(AbstractUser):
+    username = None  
+    last_login = None
+    is_active = None
+
     email = models.EmailField(unique=True, null=False)
-    surname = models.CharField(max_length=255, blank=True)
-    is_admin = models.BooleanField(default=False)
+    first_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ["first_name", "last_name", "password"]
+
+    objects = MyUserManager()
 
     def __str__(self):
         return f"user: {self.email}"
