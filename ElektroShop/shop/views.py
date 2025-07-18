@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
@@ -19,17 +19,35 @@ def say_hello(request):
 
 
 class ProductList(APIView):
+    permission_classes = [AllowAny]  
+
     def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
+
+
+class ProductDetailView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            product = Product.objects.get(pk=pk)
+            serializer = ProductSerializer(product)
+            return Response(serializer.data)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class ProductCreateView(APIView):
+    permission_classes = [IsAdminUser]
 
     def post(self, request):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(APIView):
@@ -77,4 +95,6 @@ class AuthCheckView(APIView):
             "authenticated": True,
             "user_id": user.id,
             "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
         })

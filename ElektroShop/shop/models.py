@@ -14,8 +14,7 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password, **extra_fields):
-        print(">>>>> Using custom create_user")
+    def create_user(self, email, password, first_name, **extra_fields):
         if not email:
             raise ValueError("Email is required")
         
@@ -24,25 +23,31 @@ class MyUserManager(BaseUserManager):
         except ValidationError:
             raise ValueError("Invalid email format")
         
+        if not first_name:
+            raise ValueError("First name is required")
+
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email=email, first_name=first_name, **extra_fields)
         if password:
             user.set_password(password)
         else:
             raise ValueError("Password is required")
+        
         user.save()
         return user
 
 
 class MyUser(AbstractUser):
+    email = models.EmailField(unique=True, null=False)
+    first_name = models.CharField(max_length=255, blank=False, null=False)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
     username = None  
     last_login = None
     is_active = True
 
-    email = models.EmailField(unique=True, null=False)
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
-    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["first_name", "last_name", "password"]

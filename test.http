@@ -1,5 +1,5 @@
-GET http://0.0.0.0:8000/hello/ HTTP/1.1
-Authorization: Token 181ca7d3fd9ac37ebb713fce9426e45c22b22406
+# GET http://0.0.0.0:8000/hello/ HTTP/1.1
+# Authorization: Token a78db12fd0e196de9ab2551a32f2beace5c90860
 
 
 
@@ -8,7 +8,9 @@ Authorization: Token 181ca7d3fd9ac37ebb713fce9426e45c22b22406
 
 # {
 #   "password": "pohui",
-#   "email": "1@test.test"
+#   "email": "1@test.test",
+#   "first_name": "pidor",
+#   "is_staff": true
 # }
         
 
@@ -19,3 +21,18 @@ Authorization: Token 181ca7d3fd9ac37ebb713fce9426e45c22b22406
 #   "password": "pohui",
 #   "email": "1@test.test"
 # }
+
+
+# POST http://0.0.0:8000/product/ HTTP/1.1
+# Authorization: Token 4778b4c38e0d0e4910c600786a2b4764e939c186
+# Content-Type: application/json
+
+# {
+#   "product_name": "Test4",
+#   "description": "This is a test product.",
+#   "price_usd": 19.99,
+#   "quantity": 100
+# }
+
+
+GET http://0.0.0:8000/products/ HTTP/1.1
