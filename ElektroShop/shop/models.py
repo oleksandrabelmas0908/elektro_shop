@@ -15,6 +15,7 @@ from django.contrib.auth.password_validation import validate_password
 
 class MyUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
+        print(">>>>> Using custom create_user")
         if not email:
             raise ValueError("Email is required")
         
@@ -26,10 +27,6 @@ class MyUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         if password:
-            try:
-                validate_password(password)
-            except ValidationError as e:
-                raise ValueError(f"Password validation error: {', '.join(e.messages)}")
             user.set_password(password)
         else:
             raise ValueError("Password is required")
@@ -40,7 +37,7 @@ class MyUserManager(BaseUserManager):
 class MyUser(AbstractUser):
     username = None  
     last_login = None
-    is_active = None
+    is_active = True
 
     email = models.EmailField(unique=True, null=False)
     first_name = models.CharField(max_length=255, blank=True, null=True)

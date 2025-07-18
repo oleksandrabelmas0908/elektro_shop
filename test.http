@@ -1,1 +1,21 @@
-GET http://0.0.0.0:8000/products/ HTTP/1.1
+GET http://0.0.0.0:8000/hello/ HTTP/1.1
+Authorization: Token 181ca7d3fd9ac37ebb713fce9426e45c22b22406
+
+
+
+# POST http://0.0.0.0:8000/register/ HTTP/1.1
+# Content-Type: application/json
+
+# {
+#   "password": "pohui",
+#   "email": "1@test.test"
+# }
+        
+
+# POST http://0.0.0.0:8000/login/ HTTP/1.1
+# Content-Type: application/json  
+
+# {
+#   "password": "pohui",
+#   "email": "1@test.test"
+# }

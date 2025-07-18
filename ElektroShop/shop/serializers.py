@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Product, MyUser, OrderProducts, Orders
 
+from django.contrib.auth import authenticate
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,19 +43,32 @@ class OrderSerializer(serializers.ModelSerializer):
             "status",
             "items",
         )
+    
 
-class MyUserSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)  
+
     class Meta:
         model = MyUser
-        fields = (
-            "id",
-            "username",
-            "email",
-            "first_name",
-            "last_name",
-        )
+        fields = ["email", "password", "first_name", "last_name"]
 
-    def validate_email(self, value):
-        if not value.endswith('@example.com'):
-            raise serializers.ValidationError("Email must end with @example.com")
-        return value
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        return MyUser.objects.create_user(password=password, **validated_data)
+    
+
+class CustomAuthTokenSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        user = authenticate(request=self.context.get('request'), email=email, password=password)
+
+        if not user:
+            raise serializers.ValidationError("Invalid email or password", code='authorization')
+
+        attrs['user'] = user
+        return attrs
