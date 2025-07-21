@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.urls import path
-from .views import ProductList, say_hello, RegisterView, CustomAuthToken, AuthCheckView, ProductDetailView, ProductCreateView, OrderListView
+from .views import ProductList, say_hello, RegisterView, CustomAuthToken, AuthCheckView, ProductDetailView, ProductCreateView, OrderListView, OrderItemView
 
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('login/', CustomAuthToken.as_view(), name='login'),
     path('orders/', OrderListView.as_view(), name='order-list'),
     path('orders/create/', OrderListView.as_view(), name='order-create'),
+    path('order-items/', OrderItemView.as_view(), name='order-item-create'),
 ]

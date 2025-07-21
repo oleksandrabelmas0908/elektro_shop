@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
-from .serializers import ProductSerializer, OrderGetSerializer, RegisterSerializer, CustomAuthTokenSerializer, OrderCreateSerializer
+from .serializers import ProductSerializer, OrderGetSerializer, RegisterSerializer, CustomAuthTokenSerializer, OrderProductsSerializer
 from .models import Product, Orders
 from rest_framework.response import Response
 from rest_framework import status
@@ -64,6 +64,19 @@ class ProductCreateView(APIView):
         serializer = ProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class OrderItemView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        data = request.data
+        data['user_id'] = request.user.id
+        serializer = OrderProductsSerializer(data=request.data)
+        if serializer.is_valid():
+            order = serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

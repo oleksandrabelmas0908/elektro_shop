@@ -23,15 +23,29 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class OrderProductsSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='product_id.product_name')
+    product_description = serializers.CharField(source='product_id.description')
+    product_price = serializers.DecimalField(source='product_id.price_usd', max_digits=10, decimal_places=2)
+
+
     class Meta:
         model = OrderProducts
         fields = (
-            "product_id",
+            "order_id",
+            "name",
+            "product_description",
+            "product_price",
             "amount",
         )
 
 
 class OrderGetSerializer(serializers.ModelSerializer):
+    items = OrderProductsSerializer(source='orderproducts_set', many=True, read_only=True)
+    total_price = serializers.SerializerMethodField()
+
+    def get_total_price(self, obj):
+        total = sum(item.subtotal for item in obj.orderproducts_set.all())
+        return total
 
     class Meta:
         model = Orders
@@ -40,20 +54,9 @@ class OrderGetSerializer(serializers.ModelSerializer):
             "user_id",
             "created_at",
             "status",
+            "total_price",
+            "items",
         )
-    
-
-class OrderCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Orders
-        fields = (
-            "status",
-        )
-
-    def create(self, validated_data):
-        order = Orders.objects.create(**validated_data)
-        return order
 
 
 class RegisterSerializer(serializers.ModelSerializer):

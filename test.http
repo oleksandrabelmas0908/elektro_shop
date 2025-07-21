@@ -55,6 +55,19 @@
 # Content-Type: application/json
 
 
+# GET ORDERS
 GET http://0.0.0:8000/orders/ HTTP/1.1
 Authorization: Token badb04133d9e6d93e75111e7cf614f42c6a49642
 Content-Type: application/json
+
+
+# POST ORDER ITEM
+# POST http://0.0.0:8000/order-items/ HTTP/1.1
+# Authorization: Token badb04133d9e6d93e75111e7cf614f42c6a49642
+# Content-Type: application/json
+
+# {
+#   "product_id": 2,
+#   "amount": 10,
+#   "order_id": "a2b0b40a-5f7e-48a0-8d43-e9d466f86464"
+# }
