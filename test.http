@@ -3,16 +3,21 @@
 
 
 
+# REGISTER USER
+
 # POST http://0.0.0.0:8000/register/ HTTP/1.1
 # Content-Type: application/json
 
 # {
 #   "password": "pohui",
-#   "email": "1@test.test",
+#   "email": "2@test.test",
 #   "first_name": "pidor",
 #   "is_staff": true
 # }
-        
+
+
+
+# LOGIN USER
 
 # POST http://0.0.0.0:8000/login/ HTTP/1.1
 # Content-Type: application/json  
@@ -22,6 +27,9 @@
 #   "email": "1@test.test"
 # }
 
+
+
+# ADD PRODUCT
 
 # POST http://0.0.0:8000/product/ HTTP/1.1
 # Authorization: Token 4778b4c38e0d0e4910c600786a2b4764e939c186
@@ -35,4 +43,18 @@
 # }
 
 
-GET http://0.0.0:8000/products/ HTTP/1.1
+
+# GET PRODUCTS
+
+# GET http://0.0.0:8000/products/ HTTP/1.1
+
+
+# ADD ORDER
+# POST http://0.0.0:8000/orders/create/ HTTP/1.1
+# Authorization: Token badb04133d9e6d93e75111e7cf614f42c6a49642
+# Content-Type: application/json
+
+
+GET http://0.0.0:8000/orders/ HTTP/1.1
+Authorization: Token badb04133d9e6d93e75111e7cf614f42c6a49642
+Content-Type: application/json

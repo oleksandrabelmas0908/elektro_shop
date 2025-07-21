@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 
-from .serializers import ProductSerializer, OrderSerializer, RegisterSerializer, CustomAuthTokenSerializer
+from .serializers import ProductSerializer, OrderGetSerializer, RegisterSerializer, CustomAuthTokenSerializer, OrderCreateSerializer
 from .models import Product, Orders
 from rest_framework.response import Response
 from rest_framework import status
@@ -38,6 +38,24 @@ class ProductDetailView(APIView):
         except Product.DoesNotExist:
             return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
         
+
+class OrderListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        orders = Orders.objects.filter(user_id=request.user)
+        serializer = OrderGetSerializer(orders, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        data = request.data
+        data['user_id'] = request.user.id
+        serializer = OrderGetSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ProductCreateView(APIView):
     permission_classes = [IsAdminUser]

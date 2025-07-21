@@ -31,8 +31,7 @@ class OrderProductsSerializer(serializers.ModelSerializer):
         )
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    items = OrderProductsSerializer(many=True, read_only=True)
+class OrderGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Orders
@@ -41,9 +40,21 @@ class OrderSerializer(serializers.ModelSerializer):
             "user_id",
             "created_at",
             "status",
-            "items",
         )
     
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Orders
+        fields = (
+            "status",
+        )
+
+    def create(self, validated_data):
+        order = Orders.objects.create(**validated_data)
+        return order
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)  
